@@ -1,0 +1,674 @@
+/* ============================================================
+   style.css — Public API Playground
+   Modern, minimal design inspired by Vercel/Stripe
+   ============================================================ */
+
+/* -------------------------
+   1. CUSTOM PROPERTIES
+   Dark theme is default; light theme overrides below.
+   ------------------------- */
+:root {
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  /* Transitions */
+  --ease: cubic-bezier(.4,0,.2,1);
+  --dur: .22s;
+
+  /* Typography */
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* --- DARK THEME (default) --- */
+[data-theme="dark"] {
+  --bg-page:       #09090b;
+  --bg-card:       #18181b;
+  --bg-card-hover: #1f1f23;
+  --bg-elevated:   #27272a;
+  --bg-input:      #27272a;
+
+  --border:        #27272a;
+  --border-hover:  #3f3f46;
+
+  --text-primary:   #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted:     #71717a;
+
+  --accent:         #a78bfa;
+  --accent-soft:    rgba(167,139,250,.12);
+  --accent-text:    #c4b5fd;
+
+  --badge-dog:      #3b82f6;
+  --badge-dog-bg:   rgba(59,130,246,.12);
+  --badge-joke:     #f472b6;
+  --badge-joke-bg:  rgba(244,114,182,.12);
+  --badge-user:     #34d399;
+  --badge-user-bg:  rgba(52,211,153,.12);
+  --badge-quote:    #fbbf24;
+  --badge-quote-bg: rgba(251,191,36,.12);
+
+  --shadow-card:    0 1px 3px rgba(0,0,0,.4), 0 0 0 1px var(--border);
+  --shadow-hover:   0 4px 16px rgba(0,0,0,.5), 0 0 0 1px var(--border-hover);
+
+  --error-bg:       rgba(239,68,68,.1);
+  --error-border:   rgba(239,68,68,.25);
+  --error-text:     #fca5a5;
+}
+
+/* --- LIGHT THEME --- */
+[data-theme="light"] {
+  --bg-page:       #ffffff;
+  --bg-card:       #ffffff;
+  --bg-card-hover: #fafafa;
+  --bg-elevated:   #f4f4f5;
+  --bg-input:      #f4f4f5;
+
+  --border:        #e4e4e7;
+  --border-hover:  #d4d4d8;
+
+  --text-primary:   #09090b;
+  --text-secondary: #52525b;
+  --text-muted:     #a1a1aa;
+
+  --accent:         #7c3aed;
+  --accent-soft:    rgba(124,58,237,.08);
+  --accent-text:    #7c3aed;
+
+  --badge-dog:      #2563eb;
+  --badge-dog-bg:   rgba(37,99,235,.08);
+  --badge-joke:     #ec4899;
+  --badge-joke-bg:  rgba(236,72,153,.08);
+  --badge-user:     #059669;
+  --badge-user-bg:  rgba(5,150,105,.08);
+  --badge-quote:    #d97706;
+  --badge-quote-bg: rgba(217,119,6,.08);
+
+  --shadow-card:    0 1px 3px rgba(0,0,0,.06), 0 0 0 1px var(--border);
+  --shadow-hover:   0 8px 24px rgba(0,0,0,.08), 0 0 0 1px var(--border-hover);
+
+  --error-bg:       rgba(239,68,68,.06);
+  --error-border:   rgba(239,68,68,.2);
+  --error-text:     #dc2626;
+}
+
+/* -------------------------
+   2. RESET & BASE
+   IMPORTANT: No overflow:hidden on html/body.
+   Using min-height, not height, to let content grow.
+   ------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* No overflow locks */
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;          /* NOT height:100vh */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+/* -------------------------
+   3. NAVBAR
+   Sticky, not fixed — keeps natural document flow.
+   ------------------------- */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-page);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+/* Slight transparency so backdrop-filter is visible */
+[data-theme="dark"] .navbar { background: rgba(9,9,11,.85); }
+[data-theme="light"] .navbar { background: rgba(255,255,255,.85); }
+
+.nav-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.nav-logo { color: var(--accent); flex-shrink: 0; }
+
+.nav-title {
+  font-size: .95rem;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.theme-toggle:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+
+/* Show/hide sun and moon icons based on theme */
+[data-theme="dark"]  .icon-sun  { display: block; }
+[data-theme="dark"]  .icon-moon { display: none; }
+[data-theme="light"] .icon-sun  { display: none; }
+[data-theme="light"] .icon-moon { display: block; }
+
+/* -------------------------
+   4. HERO HEADER
+   ------------------------- */
+.hero {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: var(--space-16) var(--space-6) var(--space-12);
+  text-align: center;
+}
+
+.hero-badge {
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  background: var(--accent-soft);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-5);
+}
+
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.15;
+  margin-bottom: var(--space-4);
+  color: var(--text-primary);
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* -------------------------
+   5. CONTAINER & GRID
+   Centered, padding on sides, no overflow issues.
+   ------------------------- */
+.container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 var(--space-6) var(--space-16);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-6);
+}
+
+/* -------------------------
+   6. CARDS
+   No fixed height — they grow with content.
+   ------------------------- */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-card);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  background: var(--bg-card-hover);
+}
+
+/* Card header with badge */
+.card-head { display: flex; }
+
+.card-badge {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+}
+
+/* Per-card badge colors */
+.card-badge.dog   { color: var(--badge-dog);   background: var(--badge-dog-bg);   }
+.card-badge.joke  { color: var(--badge-joke);  background: var(--badge-joke-bg);  }
+.card-badge.user  { color: var(--badge-user);  background: var(--badge-user-bg);  }
+.card-badge.quote { color: var(--badge-quote); background: var(--badge-quote-bg); }
+
+.card-desc {
+  font-size: .875rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* Content area — grows with data */
+.card-content {
+  flex: 1;
+  min-height: 0;         /* allows flex child to shrink */
+}
+
+/* Status area for loading + error messages */
+.card-status {
+  min-height: 0;         /* collapses when empty */
+}
+
+/* Card action buttons row */
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: auto;      /* push to bottom naturally */
+}
+
+/* -------------------------
+   7. BUTTONS
+   Rounded, hover effects, disabled state.
+   ------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    opacity var(--dur) var(--ease);
+  user-select: none;
+}
+
+.btn:active { transform: scale(.97); }
+
+.btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Primary — solid accent */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(124,58,237,.25);
+}
+
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(124,58,237,.35);
+  transform: translateY(-1px);
+}
+
+/* Ghost — outlined */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+}
+
+/* -------------------------
+   8. EMPTY / PLACEHOLDER STATE
+   ------------------------- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-10) var(--space-4);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: .85rem;
+}
+
+.empty-icon {
+  font-size: 2rem;
+  opacity: .5;
+}
+
+/* -------------------------
+   9. LOADING & ERROR
+   ------------------------- */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-secondary);
+  font-size: .85rem;
+}
+
+.spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error-message {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: var(--radius-sm);
+  color: var(--error-text);
+  font-size: .82rem;
+  line-height: 1.5;
+}
+
+/* -------------------------
+   10. DOG FINDER SPECIFICS
+   ------------------------- */
+.dog-result {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  animation: fadeIn .35s var(--ease);
+}
+
+.dog-img {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--radius-md);
+}
+
+.dog-breed-label {
+  margin-top: var(--space-3);
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--badge-dog);
+  text-transform: capitalize;
+}
+
+/* -------------------------
+   11. JOKE SPECIFICS
+   ------------------------- */
+.joke-result {
+  padding: var(--space-5);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  animation: fadeIn .35s var(--ease);
+}
+
+.joke-label {
+  font-size: .65rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.joke-setup {
+  font-size: .95rem;
+  color: var(--text-primary);
+  line-height: 1.55;
+}
+
+.joke-divider {
+  height: 1px;
+  background: var(--border);
+  margin: var(--space-4) 0;
+}
+
+.joke-punchline {
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--badge-joke);
+  line-height: 1.55;
+}
+
+/* -------------------------
+   12. USER PROFILE SPECIFICS
+   ------------------------- */
+.user-result {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  animation: fadeIn .35s var(--ease);
+}
+
+.user-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+}
+
+.user-info { flex: 1; min-width: 0; }
+
+.user-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: .8rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+  word-break: break-all;
+}
+
+.user-row-icon {
+  flex-shrink: 0;
+  width: 14px;
+  text-align: center;
+  font-size: .85em;
+}
+
+/* -------------------------
+   13. QUOTE SPECIFICS
+   ------------------------- */
+.quote-result {
+  padding: var(--space-6);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  text-align: center;
+  animation: fadeIn .35s var(--ease);
+}
+
+.quote-mark {
+  font-size: 2.5rem;
+  line-height: .8;
+  color: var(--badge-quote);
+  opacity: .35;
+  font-family: Georgia, serif;
+  display: block;
+  margin-bottom: var(--space-3);
+}
+
+.quote-text {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.7;
+  font-style: italic;
+  margin-bottom: var(--space-4);
+}
+
+.quote-divider {
+  height: 1px;
+  width: 40%;
+  margin: 0 auto var(--space-4);
+  background: var(--border);
+}
+
+.quote-author {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--badge-quote);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+/* -------------------------
+   14. ANIMATIONS
+   Only subtle fade-in — nothing heavy.
+   ------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* -------------------------
+   15. FOOTER
+   ------------------------- */
+.site-footer {
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  color: var(--text-muted);
+  font-size: .75rem;
+  border-top: 1px solid var(--border);
+  transition: border-color var(--dur) var(--ease);
+}
+
+/* -------------------------
+   16. RESPONSIVE
+   No horizontal scroll, no clipped content.
+   ------------------------- */
+@media (max-width: 768px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .hero {
+    padding: var(--space-10) var(--space-4) var(--space-8);
+  }
+
+  .hero-title {
+    font-size: 1.75rem;
+  }
+
+  .container {
+    padding: 0 var(--space-4) var(--space-10);
+  }
+
+  .card {
+    padding: var(--space-5);
+  }
+
+  .card-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .user-result {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .user-row {
+    justify-content: center;
+    word-break: break-all;
+  }
+}
+
+/* Tablet stays 2-col — no changes needed above 768px */
